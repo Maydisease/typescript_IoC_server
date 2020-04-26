@@ -106,9 +106,9 @@ class Decorator {
             let source = Decorator.TempRouterMap.get(controllerName);
 
             if (source) {
-                source[`${methodName}/post`] = { path, type: 'get' }
+                source[`${methodName}/post`] = { path}
             } else {
-                source = { [`${methodName}/post`]: { path, type: 'get' } };
+                source = { [`${methodName}/post`]: { path} };
             }
 
             Decorator.TempRouterMap.set(controllerName, source)
@@ -121,9 +121,9 @@ class Decorator {
             let source = Decorator.TempRouterMap.get(controllerName);
 
             if (source) {
-                source[`${methodName}/get`] = { path, type: 'get' }
+                source[`${methodName}/get`] = { path}
             } else {
-                source = { [`${methodName}/get`]: { path, type: 'get' } };
+                source = { [`${methodName}/get`]: { path} };
             }
 
             Decorator.TempRouterMap.set(controllerName, source)
