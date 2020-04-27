@@ -5,13 +5,20 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "clear && tsc && node ./dist/app.js"
+    "start": "clear && tsc && node ./dist/app.js",
+    "start:i": "clear && tsc && node --inspect=9222 ./dist/app.js"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
     "@types/koa": "^2.11.3",
+    "@types/koa-bodyparser": "^4.3.0",
+    "chrome-remote-interface": "^0.28.2",
     "koa": "^2.11.0",
-    "reflect-metadata": "^0.1.13"
+    "koa-bodyparser": "^4.3.0",
+    "reflect-metadata": "^0.1.13",
+    "ts-node": "^8.9.1",
+    "tsconfig-paths": "^3.9.0",
+    "typescript": "^3.8.3"
   }
 }

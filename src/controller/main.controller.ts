@@ -1,4 +1,4 @@
-import {Decorator, Controller, Inject, Get, Post} from '../decorator/Decorator'
+import {Decorator, Controller, Inject, Get, Post, Params, Query, Headers} from '../decorator/Decorator'
 import {ToolsService} from '../services/tools.service';
 import {HttpService} from '../services/http.service';
 
@@ -19,8 +19,13 @@ class Main {
     }
 
     @Get('SYSTEM_RUN_STATE')
-    public getSystemRunState() {
-        return {cpuNum: 4, memory: 2048}
+    public getSystemRunState(@Params() params: Object, @Query() query: Object, @Headers() headers: Object) {
+
+        console.log('params:', params);
+        console.log('query:', query);
+        console.log('headers:', headers);
+
+        return {cpuNum: 4, memory: 2048, ...this.httpService.get()}
     }
 
     @Post('CONFIG_LIST')
@@ -29,8 +34,13 @@ class Main {
     }
 
     @Post('SYSTEM_RUN_STATE')
-    public updateSystemRunState() {
+    public updateSystemRunState(@Params() params: Object, @Query() query: Object, @Headers() headers: Object) {
+        
+        console.log('params:', params);
+        console.log('query:', query);
+        console.log('headers:', headers);
 
+        return {cpuNum: 4, memory: 2048, ...this.httpService.get()}
     }
 }
 

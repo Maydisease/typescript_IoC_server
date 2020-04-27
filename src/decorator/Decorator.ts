@@ -17,6 +17,7 @@ class Decorator {
     public static controllerServiceMap = new Map();
     public static TempRouterMap = new Map();
     public static NewRouterList: string[] = [];
+    public static ControllerMedthodParams = new Map();
 
     // 注入装饰器
     public static inject(serivceName: string) {
@@ -50,7 +51,7 @@ class Decorator {
                         const service = classParamMap[key];
                         providerList.some((item: any, index: number) => {
                             if (service.providerName === item.useClass) {
-                                injectServiceList.push(item.provider);
+                                injectServiceList.push(new item.provider());
                                 return
                             }
                         })
@@ -68,12 +69,14 @@ class Decorator {
         }
     }
 
+    // 控制器的装饰器
     public static controller(controlName: string) {
 
         return <T extends { new(...args: any[]): {} }>(target: T) => {
 
             let className = new target().constructor.name;
             const tempControllerRouterMap = Decorator.TempRouterMap.get(className);
+            const tempControllerMedthodParams = Decorator.ControllerMedthodParams.get(className);
             const tempRoute: any = {};
 
             if (tempControllerRouterMap) {
@@ -81,7 +84,20 @@ class Decorator {
                     const route = tempControllerRouterMap[key];
                     const methodName = key.split('/')[0];
                     const methodType = key.split('/')[1];
-                    Decorator.NewRouterList.push(`${methodType.toLowerCase()}/${controlName.toLowerCase()}/${route.path.toLowerCase()}|${className}/${methodName}`);
+                    let paramsStr = '';
+                    console.log('tempControllerMedthodParams:', tempControllerMedthodParams, 'methodName:', methodName, 'methodType:', methodType);
+                    if(tempControllerMedthodParams && tempControllerMedthodParams[methodName]) {
+                        for(let key in tempControllerMedthodParams[methodName]){
+                            console.log('-----', key, methodName, tempControllerMedthodParams[methodName][key]);
+                            console.log('----9', `${key}:${tempControllerMedthodParams[methodName][key]}`);
+                            paramsStr += `${key}:${tempControllerMedthodParams[methodName][key]}/`;
+                        }
+                        paramsStr = paramsStr.substring(0, paramsStr.length - 1);
+                    }
+
+                    let routeStr = `${methodType.toLowerCase()}/${controlName.toLowerCase()}/${route.path.toLowerCase()}|${className}/${methodName}`;
+                    routeStr += (paramsStr ? `|${paramsStr}` : '');
+                    Decorator.NewRouterList.push(routeStr);
                 }
             }
 
@@ -100,6 +116,7 @@ class Decorator {
         }
     }
 
+    // 控制器内POST的方法路径名
     public static post(path: string) {
         return function (target: any, methodName: string, descriptor: PropertyDescriptor) {
             const controllerName = target.constructor.name;
@@ -115,6 +132,7 @@ class Decorator {
         }
     }
 
+        // 控制器内GET的方法路径名
     public static get(path: string) {
         return function (target: any, methodName: string, descriptor: PropertyDescriptor) {
             const controllerName = target.constructor.name;
@@ -129,6 +147,63 @@ class Decorator {
             Decorator.TempRouterMap.set(controllerName, source)
         }
     }
+
+    // 控制器内方法内的POST参数
+    public static params() {
+        return function <T extends { new(...args: any[]): {} }>(target: T, methodName: string, paramIndex: number) {
+            console.log('$params', target, methodName, paramIndex);
+            const controllerName = target.constructor.name;
+            let source = Decorator.ControllerMedthodParams.get(controllerName);
+
+            console.log(source);
+
+            if (source) {
+                source[methodName] = {...source[methodName], [paramIndex]: 'params'};
+            } else {
+                source = { [methodName]: { [paramIndex]: 'params'} };
+            }
+
+            Decorator.ControllerMedthodParams.set(controllerName, source)
+        }
+    }
+
+    // 控制器内方法内的GET参数
+    public static query() {
+        return function <T extends { new(...args: any[]): {} }>(target: T, methodName: string, paramIndex: number) {
+            console.log('$query', target, methodName, paramIndex);
+            const controllerName = target.constructor.name;
+            let source = Decorator.ControllerMedthodParams.get(controllerName);
+
+            console.log(source);
+
+            if (source) {
+                source[methodName] = {...source[methodName], [paramIndex]: 'query'};
+            } else {
+                source = { [methodName]: { [paramIndex]: 'query'} };
+            }
+
+            Decorator.ControllerMedthodParams.set(controllerName, source)
+        }
+    }
+
+    // 控制器内方法内的请求头
+    public static headers() {
+        return function <T extends { new(...args: any[]): {} }>(target: T, methodName: string, paramIndex: number) {
+            console.log('$headers', target, methodName, paramIndex);
+            const controllerName = target.constructor.name;
+            let source = Decorator.ControllerMedthodParams.get(controllerName);
+
+            console.log(source);
+
+            if (source) {
+                source[methodName] = {...source[methodName], [paramIndex]: 'headers'};
+            } else {
+                source = { [methodName]: {[paramIndex]: 'headers'} };
+            }
+
+            Decorator.ControllerMedthodParams.set(controllerName, source)
+        }
+    }
 }
 
 const Inject = Decorator.inject
@@ -136,5 +211,8 @@ const Module = Decorator.module
 const Controller = Decorator.controller
 const Get =  Decorator.get
 const Post = Decorator.post
+const Params = Decorator.params
+const Query = Decorator.query
+const Headers = Decorator.headers
 
-export {Decorator, Inject, Module, Controller, Get, Post}
+export {Decorator, Inject, Module, Controller, Get, Post, Params, Query, Headers}

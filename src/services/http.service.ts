@@ -1,6 +1,6 @@
 export class HttpService {
     public get() {
-        console.log('HttpService get');
+        return {name: 'tandongs', age: 31, work: 'coder'}
     }
     public post() {
         console.log('HttpService post');
