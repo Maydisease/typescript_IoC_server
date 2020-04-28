@@ -1,4 +1,4 @@
-import {Decorator, Controller, Inject, Get, Post} from '../decorator/Decorator'
+import {Decorator, Controller, Inject, Get, Post} from '../decorator/decorator'
 
 @Controller("user")
 class User {

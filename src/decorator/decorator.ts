@@ -21,7 +21,6 @@ class Decorator {
 
     // 注入装饰器
     public static inject(serivceName: string) {
-        console.log('controll fn param');
         return function (target: any, propertyKey: string | symbol, parameterIndex: number) {
             let className = new target().constructor.name;
             let source = Decorator.controllerServiceMap.get(className);
@@ -85,11 +84,8 @@ class Decorator {
                     const methodName = key.split('/')[0];
                     const methodType = key.split('/')[1];
                     let paramsStr = '';
-                    console.log('tempControllerMedthodParams:', tempControllerMedthodParams, 'methodName:', methodName, 'methodType:', methodType);
                     if(tempControllerMedthodParams && tempControllerMedthodParams[methodName]) {
                         for(let key in tempControllerMedthodParams[methodName]){
-                            console.log('-----', key, methodName, tempControllerMedthodParams[methodName][key]);
-                            console.log('----9', `${key}:${tempControllerMedthodParams[methodName][key]}`);
                             paramsStr += `${key}:${tempControllerMedthodParams[methodName][key]}/`;
                         }
                         paramsStr = paramsStr.substring(0, paramsStr.length - 1);
@@ -151,11 +147,8 @@ class Decorator {
     // 控制器内方法内的POST参数
     public static params() {
         return function <T extends { new(...args: any[]): {} }>(target: T, methodName: string, paramIndex: number) {
-            console.log('$params', target, methodName, paramIndex);
             const controllerName = target.constructor.name;
             let source = Decorator.ControllerMedthodParams.get(controllerName);
-
-            console.log(source);
 
             if (source) {
                 source[methodName] = {...source[methodName], [paramIndex]: 'params'};
@@ -170,11 +163,8 @@ class Decorator {
     // 控制器内方法内的GET参数
     public static query() {
         return function <T extends { new(...args: any[]): {} }>(target: T, methodName: string, paramIndex: number) {
-            console.log('$query', target, methodName, paramIndex);
             const controllerName = target.constructor.name;
             let source = Decorator.ControllerMedthodParams.get(controllerName);
-
-            console.log(source);
 
             if (source) {
                 source[methodName] = {...source[methodName], [paramIndex]: 'query'};
@@ -189,11 +179,8 @@ class Decorator {
     // 控制器内方法内的请求头
     public static headers() {
         return function <T extends { new(...args: any[]): {} }>(target: T, methodName: string, paramIndex: number) {
-            console.log('$headers', target, methodName, paramIndex);
             const controllerName = target.constructor.name;
             let source = Decorator.ControllerMedthodParams.get(controllerName);
-
-            console.log(source);
 
             if (source) {
                 source[methodName] = {...source[methodName], [paramIndex]: 'headers'};
